@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Rapid Identification and Transcription Zone">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
+    
+    <script src="https://unpkg.com/split-grid/dist/split-grid.js"></script>
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+
+    <script
+        src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
+        integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI="
+        crossorigin="anonymous"></script>
+    
+    <link href="css/main.css" rel="stylesheet"></link>
+    <title>RITZ</title>
+</head>
+<body>
+    <!-- branded navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">RITZ</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="alert('You\'re gonna have to pay me more if you want good documentation 😉')">Help</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Options
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" onclick="alert('I bet you would like to bind your keys, now wouldn\'t you!')">Keybindings</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Results</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="reset_ui();">Reset</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div id="flex_main" class="flex_container">
+        <div id="img_disp" class="bg-secondary">
+            <span id="large_elm_helper"></span>
+            <img id="large_elm" src="https://popper.js.org/static/popper-text-45fb69958c6fc80df98607583c280b4b.svg">
+
+        </div>
+        <div id="slider"></div>
+        <div id="img_scroll" class="bg-white">
+            <div id="upload" class="bg-primary text-white">
+                <div class="material-icons" id="upload_icon">file_upload</div>
+            </div>
+            <div class="bg-white" id="img_flex" class="img_flex"></div>
+        </div>
+    </div>
+    <!--<div class="row" style="background-color: brown; height: calc(100% - 56px);">
+    </div>-->
+    <script src="js/main.js"></script>
+</body>
+</html>
