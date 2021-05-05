@@ -1,0 +1,9 @@
+{
+    "_README": "# indicates a magic function, currently only PREV, NEXT, APPLY, and REMOVE. Words that begin with a ! will be immediately applied, otherwise, only input field will be populated. Comments begin _",
+    "ArrowLeft": "#PREV",
+    "ArrowRight": "#NEXT",
+    "Enter": "#APPLY",
+    "Delete": "#REMOVE",
+    "a": "apple",
+    "b": "!banana"
+}

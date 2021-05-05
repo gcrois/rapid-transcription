@@ -12,15 +12,31 @@ body {
 .flex_container {
     display: grid;
     grid-template-columns: 1fr 16px 200px;
-    grid-template-rows: calc(100vh - 56px);
+    grid-template-rows: 48px calc(100vh - 56px - 96px) 48px;
     gap: 0px 0px;
     grid-template-areas:
-      "img_disp slider img_scroll";
+        "output slider img_scroll"
+        "img_disp slider img_scroll"
+        "input slider img_scroll";
+    height: calc(100vh - 56px);
+}
+
+#output {
+    grid-area: output;
+    text-align: center;
+    padding: 2px;
+    font-size: 32px;
+}
+
+#input {
+    grid-area: input;
 }
 
 #img_disp {
     grid-area: img_disp;
     height: 100%;
+    max-height: 100%;
+    overflow: auto;
     text-align: center;
 }
 
@@ -55,6 +71,7 @@ body {
 
 #large_elm {
     vertical-align: middle;
+    width: 50%;
 }
 
 #upload_icon {
@@ -84,7 +101,11 @@ a:hover {
     max-height: auto;
     display: inline-block;
     text-align: center;
-    position:relative;
+    position: relative;
+}
+
+img.preview {
+    pointer-events: auto;
 }
 
 img.preview:hover {
@@ -92,8 +113,31 @@ img.preview:hover {
     cursor: pointer;
 }
 
+img.preview.transcribed {
+    opacity: 0.75;
+    cursor: pointer;
+}
+
+img.preview.skipped {
+    opacity: 0.9;
+    cursor: pointer;
+}
+
 div.preview:hover {
-    background-color: blue;
+    background-color: blue !important;
+}
+
+div.preview.transcribed {
+    background-color: green;
+}
+
+div.preview.skipped {
+    background-color: red;
+}
+
+.selected {
+    animation: jiggle 1s ease-in-out infinite;
+    z-index: 3;
 }
 
 .caption {
@@ -102,4 +146,20 @@ div.preview:hover {
     left: 50%;
     transform: translate(-50%, -50%);
     color: white;
+    z-index: 4;
+    pointer-events: none;
+}
+
+/* jiggle */
+
+@keyframes jiggle {
+    0% {
+        transform: scale(.95, .95);
+    }
+    50% {
+        transform: scale(1, 1);
+    }
+    100% {
+        transform: scale(.95, .95);
+    }
 }

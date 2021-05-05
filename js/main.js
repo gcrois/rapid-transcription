@@ -6,14 +6,31 @@ let upload = $("#upload");
 let img_flex = $("#img_flex");
 let large_elm = $("#large_elm");
 
+let output = $("#output");
+let input = $("#txtinput");
+
 let fileInput = document.createElement("input");
 
 let files = [];
 let images = {};
 let results = {};
 
+let importantmsg = "";
+
 let selected_img = null;
 
+const test = () => {console.log("testy time")};
+
+let keybindings = {};
+
+const MAGIC_FUNCS = {
+    "#APPLY": "apply_cur_transcription()",
+    "#PREV": "prev_image()",
+    "#NEXT": "next_image()",
+    "#REMOVE": "clear_current()",
+}
+
+/* https://stackoverflow.com/a/7616484 */
 String.prototype.hashCode = function() {
     var hash = 0, i, chr;
     if (this.length === 0) return hash;
@@ -24,6 +41,15 @@ String.prototype.hashCode = function() {
     }
     return hash;
 };
+
+/* https://stackoverflow.com/a/50772599 */
+function downloadTextFile(text, name) {
+    const a = document.createElement('a');
+    const type = name.split(".").pop();
+    a.href = URL.createObjectURL( new Blob([text], { type:`text/${type === "txt" ? "plain" : type}` }) );
+    a.download = name;
+    a.click();
+}
 
 function preventDefault(e) {
 	e.preventDefault();
@@ -67,19 +93,43 @@ async function generateIMG(f) {
     div.appendChild(caption);
     img_flex[0].appendChild(div);
 
-    url = await url;
+    div.onmouseover = () => {display_msg(`${get_img_stats(id)}`)};
+    div.onmouseleave = () => {display_msg(importantmsg)};
 
+    url = await url;
     img.src = url;
 
     images[id] = {
         "name": f.name,
         "url": url,
         "class": "unclassified",
+        "next": null,
+        "prev": null,
     };
+
+    return new Promise((resolve, reject) => {img.onload = resolve; img.onerror = reject;})
+}
+
+function get_img_stats(id) {
+    return `${images[id].name}: ${images[id].class}`
+}
+
+function display_msg(msg) {
+    output.text(msg);
 }
 
 function image_sel(id) {
+    if (selected_img != null && results[images[selected_img].name] === undefined) {
+        mark_skipped(selected_img);
+    }
+
+    if ($(`#${selected_img}_img`).length != 0) {
+        $(`#${selected_img}_div`).removeClass('selected');
+    }
     large_elm[0].src = images[id].url;
+    display_msg(importantmsg = get_img_stats(id));
+    selected_img = id;
+    $(`#${id}_div`).addClass('selected');
 }
 
 function init_ui() {
@@ -103,6 +153,13 @@ function init_ui() {
         handleFiles(fileInput.files);
     });
 
+    /* handle enter on custom entry */
+    input.on('keyup', function (e) {
+        if (e.key === 'Enter' || e.keyCode === 13) {
+            apply_cur_transcription();
+        }
+    });
+
     const no_drag = (e) => {
         e.addEventListener('dragenter', preventDefault, false);
         e.addEventListener('dragleave', preventDefault, false);
@@ -114,17 +171,62 @@ function init_ui() {
     no_drag($("body")[0]);
 
     img_scroll[0].addEventListener('drop', handleDrop, false);
+
+    $("#results").click(()=>{downloadTextFile(JSON.stringify(results), 'results.json');});
+
+    $.getJSON("keybindings.json").done(res => {
+        for (const key in res) {
+            if (res[key][0] == '#') {
+                keybindings[key] = `${MAGIC_FUNCS[res[key]]}`;
+            } else if (res[key][0] == '!') {
+                keybindings[key] = `apply_transcription(selected_img, "${res[key].substring(1)}"); next_image();`;
+            } else if (res[key][0] != '_'){
+                keybindings[key] = `input.val("${res[key]}")`;
+            }
+        }
+
+        binds = "";
+        for (const key in keybindings) {
+            binds += `if (key == "${key}"){${keybindings[key]}};`;
+        }
+
+        console.log(binds);
+
+        document.onkeydown = function(e){
+            if (input[0] === document.activeElement) {return;}
+            const key = e.key;
+            eval(binds);
+        };
+    }).fail((bad)=>{alert("Cannot parse keybindings!"); console.log(bad);});
 }
 
 function update_ui() {
-    if (files.length || images.length) {
+    if (files.length || Object.keys(images).length) {
         upload.css("height", "24px");
         $("#upload_icon").css("font-size", "24px");
         img_flex.css("max-height", "calc(100% - 24px)");
 
+        let outs = [];
         for (var i = 0; i < files.length; i++) {
-            generateIMG(files[i]);
+            outs.push(generateIMG(files[i]));
         }
+
+        Promise.all(outs).then(() => {
+            let prev = null;
+            let first = null;
+            let img;
+            for (img in images) {
+                if (prev != null) {
+                    images[prev].next = img;
+                    images[img].prev = prev;
+                } else {
+                    first = img
+                }
+                prev = img;
+            }
+            images[img].next = first;
+            images[first].prev = img;
+        });
 
         files = [];
     } else {
@@ -140,6 +242,49 @@ function reset_ui() {
         files = [];
         update_ui();
     }
+}
+
+function apply_transcription(id, transcription) {
+    images[id].class = transcription;
+    $(`#${id}_img`)[0].className = 'preview transcribed';
+    $(`#${id}_div`)[0].className = 'preview transcribed';
+    $(`#${id}_caption`).text(transcription);
+    results[images[id].name] = transcription;
+}
+
+function apply_cur_transcription() {
+    const t = input.val();
+    if (t != "") {
+        apply_transcription(selected_img, t);
+        input.val("");
+    }
+    next_image();
+}
+
+function remove_transcription(id) {
+    images[id].class = "unclassified";
+    $(`#${id}_img`)[0].className = 'preview';
+    $(`#${id}_div`)[0].className = 'preview';
+    $(`#${id}_caption`).text("");
+    delete results[images[id].name];
+}
+
+function clear_current() {
+    remove_transcription(selected_img);
+    image_sel(selected_img);
+}
+
+function mark_skipped(id) {
+    $(`#${id}_img`)[0].className = 'preview skipped';
+    $(`#${id}_div`)[0].className = 'preview skipped';
+}
+
+function next_image() {
+    image_sel(images[selected_img].next);
+}
+
+function prev_image() {
+    image_sel(images[selected_img].prev);
 }
 
 init_ui()

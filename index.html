@@ -14,8 +14,7 @@
       rel="stylesheet">
 
     <script
-        src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
-        integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI="
+        src="https://code.jquery.com/jquery-3.6.0.min.js"
         crossorigin="anonymous"></script>
     
     <link href="css/main.css" rel="stylesheet"></link>
@@ -43,7 +42,7 @@
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Results</a>
+                        <a class="nav-link" href="#" id="results">Results</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" onclick="reset_ui();">Reset</a>
@@ -53,10 +52,13 @@
         </div>
     </nav>
     <div id="flex_main" class="flex_container">
+        <div id="input" class="bg-light">
+            <input id="txtinput" class="form-control form-control-lg" type="text" placeholder="Enter a classification">
+        </div>
+        <div id="output" class="bg-info"></div>
         <div id="img_disp" class="bg-secondary">
             <span id="large_elm_helper"></span>
-            <img id="large_elm" src="https://popper.js.org/static/popper-text-45fb69958c6fc80df98607583c280b4b.svg">
-
+            <img id="large_elm">
         </div>
         <div id="slider"></div>
         <div id="img_scroll" class="bg-white">
