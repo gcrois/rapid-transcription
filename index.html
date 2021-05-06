@@ -37,12 +37,22 @@
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Options
                         </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" onclick="alert('I bet you would like to bind your keys, now wouldn\'t you!')">Keybindings</a></li>
+                        <ul id="options_menu" class="dropdown-menu allow-focus" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item keepopen" onclick="alert('I bet you would like to bind your keys, now wouldn\'t you!')">Keybindings</a></li>
+                            <li>
+                                <div class="dropdown-item checkbox keepopen">
+                                    <label>
+                                        <input id="instant_apply" type="checkbox"> Instant apply hotkeys
+                                    </label>
+                                </div>                     
+                            </li>
                         </ul>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#" id="results">Results</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="recover">Recover</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" onclick="reset_ui();">Reset</a>

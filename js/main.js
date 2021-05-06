@@ -15,13 +15,15 @@ let files = [];
 let images = {};
 let results = {};
 
-let importantmsg = "";
+let initialized = false;
+
+let important_msg = "";
 
 let selected_img = null;
 
-const test = () => {console.log("testy time")};
-
 let keybindings = {};
+
+let localStorage = window.localStorage;
 
 const MAGIC_FUNCS = {
     "#APPLY": "apply_cur_transcription()",
@@ -94,7 +96,7 @@ async function generateIMG(f) {
     img_flex[0].appendChild(div);
 
     div.onmouseover = () => {display_msg(`${get_img_stats(id)}`)};
-    div.onmouseleave = () => {display_msg(importantmsg)};
+    div.onmouseleave = () => {display_msg(important_msg)};
 
     url = await url;
     img.src = url;
@@ -127,9 +129,12 @@ function image_sel(id) {
         $(`#${selected_img}_div`).removeClass('selected');
     }
     large_elm[0].src = images[id].url;
-    display_msg(importantmsg = get_img_stats(id));
+    display_msg(important_msg = get_img_stats(id));
     selected_img = id;
     $(`#${id}_div`).addClass('selected');
+
+    // make sure selected element is visible
+    $(`#${id}_div`)[0].scrollIntoView({behavior: "smooth", block: "center"});
 }
 
 function init_ui() {
@@ -174,6 +179,8 @@ function init_ui() {
 
     $("#results").click(()=>{downloadTextFile(JSON.stringify(results), 'results.json');});
 
+    $("#recover").click(()=>{downloadTextFile(localStorage.getItem('results'), 'recovered_results.json');});
+
     $.getJSON("keybindings.json").done(res => {
         for (const key in res) {
             if (res[key][0] == '#') {
@@ -181,7 +188,7 @@ function init_ui() {
             } else if (res[key][0] == '!') {
                 keybindings[key] = `apply_transcription(selected_img, "${res[key].substring(1)}"); next_image();`;
             } else if (res[key][0] != '_'){
-                keybindings[key] = `input.val("${res[key]}")`;
+                keybindings[key] = `if ($('#instant_apply').is('checked')) {apply_transcription(selected_img, "${res[key].substring(1)}"); next_image();} else {input.val("${res[key]}")}`;
             }
         }
 
@@ -190,14 +197,22 @@ function init_ui() {
             binds += `if (key == "${key}"){${keybindings[key]}};`;
         }
 
-        console.log(binds);
-
         document.onkeydown = function(e){
             if (input[0] === document.activeElement) {return;}
             const key = e.key;
             eval(binds);
         };
     }).fail((bad)=>{alert("Cannot parse keybindings!"); console.log(bad);});
+
+    /* make dropdown menu not close immediately */
+    $('#options_menu').on('hide.bs.dropdown', function (e) {
+        var target = $(e.target);
+        if(target.hasClass("keepopen") || target.parents(".keepopen").length){
+            return false; // returning false should stop the dropdown from hiding.
+        }else{
+            return true;
+        }
+    });
 }
 
 function update_ui() {
@@ -211,24 +226,31 @@ function update_ui() {
             outs.push(generateIMG(files[i]));
         }
 
+        let first = null;
         Promise.all(outs).then(() => {
             let prev = null;
-            let first = null;
             let img;
             for (img in images) {
                 if (prev != null) {
                     images[prev].next = img;
                     images[img].prev = prev;
                 } else {
-                    first = img
+                    first = img;
                 }
                 prev = img;
             }
             images[img].next = first;
             images[first].prev = img;
+
+            if (!initialized) {
+                initialized = true;
+                console.log(first);
+                image_sel(first);
+            }    
         });
 
         files = [];
+
     } else {
         img_flex.css("max-height", "0%");
         upload.css("height", "100%");
@@ -250,6 +272,8 @@ function apply_transcription(id, transcription) {
     $(`#${id}_div`)[0].className = 'preview transcribed';
     $(`#${id}_caption`).text(transcription);
     results[images[id].name] = transcription;
+
+    localStorage.setItem('results', JSON.stringify(results));
 }
 
 function apply_cur_transcription() {
