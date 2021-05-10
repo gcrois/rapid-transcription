@@ -4,6 +4,6 @@
     "ArrowRight": "#NEXT",
     "Enter": "#APPLY",
     "Delete": "#REMOVE",
-    "x": "smudge",
-    "n": "character"
+    "c": "character",
+    "n": "noncharacter"
 }

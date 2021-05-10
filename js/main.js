@@ -16,6 +16,7 @@ let images = {};
 let results = {};
 
 let initialized = false;
+let instantApplySetting = false;
 
 let important_msg = "";
 
@@ -188,7 +189,7 @@ function init_ui() {
             } else if (res[key][0] == '!') {
                 keybindings[key] = `apply_transcription(selected_img, "${res[key].substring(1)}"); next_image();`;
             } else if (res[key][0] != '_'){
-                keybindings[key] = `if ($('#instant_apply').is('checked')) {apply_transcription(selected_img, "${res[key].substring(1)}"); next_image();} else {input.val("${res[key]}")}`;
+                keybindings[key] = `if (instantApplySetting) {apply_transcription(selected_img, "${res[key]}"); next_image();} else {input.val("${res[key]}")}`;
             }
         }
 
