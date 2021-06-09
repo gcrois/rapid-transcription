@@ -4,6 +4,14 @@
     "ArrowRight": "#NEXT",
     "Enter": "#APPLY",
     "Delete": "#REMOVE",
-    "c": "character",
-    "n": "noncharacter"
+    "Backspace": "#CLEARLAST",
+    "e": "empty",
+    "b": "blur",
+    "p": "partial",
+    "m": "multi",
+    "n": "nongreek",
+    "r": "rotated",
+    "c": "clear",
+    "h": "high",
+    "l": "low"
 }

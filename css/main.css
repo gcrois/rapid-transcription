@@ -102,6 +102,8 @@ a:hover {
     display: inline-block;
     text-align: center;
     position: relative;
+    hyphens: auto;
+    overflow-y: hidden;
 }
 
 img.preview {
