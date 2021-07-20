@@ -5,13 +5,6 @@
     "Enter": "#APPLY",
     "Delete": "#REMOVE",
     "Backspace": "#CLEARLAST",
-    "e": "empty",
-    "b": "blur",
-    "p": "partial",
-    "m": "multi",
-    "n": "nongreek",
-    "r": "rotated",
-    "c": "clear",
     "h": "high",
     "l": "low"
 }
