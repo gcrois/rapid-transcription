@@ -140,6 +140,10 @@ function image_sel(id) {
 }
 
 function init_ui() {
+    const options = window.location.href.split('?');
+
+    if (options.length > 2 && options[2] != "") set_dispsize(options[2]);
+
     Split({
         columnGutters: [{
             track: 1,
@@ -188,8 +192,7 @@ function init_ui() {
         update_keybindings();
 
         // get keybindings from url
-        const options = window.location.href.split('?');
-        if (options.length > 1) {
+        if (options.length > 1 && options[1] != "") {
             const binds = options[1].split(';');
             for (let i = 0; i < binds.length; i++) {
                 const b = binds[i].split(',')
@@ -337,6 +340,10 @@ function next_image() {
 
 function prev_image() {
     image_sel(images[selected_img].prev);
+}
+
+function set_dispsize(s) {
+    large_elm.css('width', s);
 }
 
 init_ui()
