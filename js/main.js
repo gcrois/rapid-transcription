@@ -186,6 +186,16 @@ function init_ui() {
     $.getJSON("keybindings.json").done(res => {
         keybindings = res;
         update_keybindings();
+
+        // get keybindings from url
+        const options = window.location.href.split('?');
+        if (options.length > 1) {
+            const binds = options[1].split(';');
+            for (let i = 0; i < binds.length; i++) {
+                const b = binds[i].split(',')
+                add_binding(b[0], b[1]);
+            }
+        }
     }).fail((bad)=>{alert("Cannot parse keybindings!"); console.log(bad);});
 
     /* make dropdown menu not close immediately */
