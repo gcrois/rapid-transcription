@@ -26,6 +26,7 @@ body {
     text-align: center;
     padding: 2px;
     font-size: 32px;
+    overflow-x: auto;
 }
 
 #input {
@@ -102,6 +103,8 @@ a:hover {
     display: inline-block;
     text-align: center;
     position: relative;
+    hyphens: auto;
+    overflow-y: hidden;
 }
 
 img.preview {

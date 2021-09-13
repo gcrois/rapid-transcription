@@ -31,6 +31,7 @@ const MAGIC_FUNCS = {
     "#PREV": "prev_image()",
     "#NEXT": "next_image()",
     "#REMOVE": "clear_current()",
+    "#CLEARLAST": "clear_last()",
 }
 
 /* https://stackoverflow.com/a/7616484 */
@@ -139,6 +140,10 @@ function image_sel(id) {
 }
 
 function init_ui() {
+    const options = window.location.href.split('?');
+
+    if (options.length > 2 && options[2] != "") set_dispsize(options[2]);
+
     Split({
         columnGutters: [{
             track: 1,
@@ -183,26 +188,17 @@ function init_ui() {
     $("#recover").click(()=>{downloadTextFile(localStorage.getItem('results'), 'recovered_results.json');});
 
     $.getJSON("keybindings.json").done(res => {
-        for (const key in res) {
-            if (res[key][0] == '#') {
-                keybindings[key] = `${MAGIC_FUNCS[res[key]]}`;
-            } else if (res[key][0] == '!') {
-                keybindings[key] = `apply_transcription(selected_img, "${res[key].substring(1)}"); next_image();`;
-            } else if (res[key][0] != '_'){
-                keybindings[key] = `if (instantApplySetting) {apply_transcription(selected_img, "${res[key]}"); next_image();} else {input.val("${res[key]}")}`;
+        keybindings = res;
+        update_keybindings();
+
+        // get keybindings from url
+        if (options.length > 1 && options[1] != "") {
+            const binds = options[1].split(';');
+            for (let i = 0; i < binds.length; i++) {
+                const b = binds[i].split(',')
+                add_binding(b[0], b[1]);
             }
         }
-
-        binds = "";
-        for (const key in keybindings) {
-            binds += `if (key == "${key}"){${keybindings[key]}};`;
-        }
-
-        document.onkeydown = function(e){
-            if (input[0] === document.activeElement) {return;}
-            const key = e.key;
-            eval(binds);
-        };
     }).fail((bad)=>{alert("Cannot parse keybindings!"); console.log(bad);});
 
     /* make dropdown menu not close immediately */
@@ -214,6 +210,35 @@ function init_ui() {
             return true;
         }
     });
+}
+
+function update_keybindings(bind_dict=keybindings) {
+    bind_code = {}
+    for (const key in bind_dict) {
+        if (bind_dict[key][0] == '#') {
+            bind_code[key] = `${MAGIC_FUNCS[bind_dict[key]]}`;
+        } else if (bind_dict[key][0] == '!') {
+            bind_code[key] = `apply_transcription(selected_img, "${bind_dict[key].substring(1)}"); next_image();`;
+        } else if (bind_dict[key][0] != '_'){
+            bind_code[key] = `if (instantApplySetting) {apply_transcription(selected_img, "${bind_dict[key]}"); next_image();} else {input.val(input.val() + " ${bind_dict[key]}")}`;
+        }
+    }
+
+    binds = "";
+    for (const key in bind_code) {
+        binds += `if (key == "${key}"){${bind_code[key]}};`;
+    }
+
+    document.onkeydown = function(e){
+        if (input[0] === document.activeElement) {return;}
+        const key = e.key;
+        eval(binds);
+    };
+}
+
+function add_binding(key, label) {
+    keybindings[key] = label;
+    update_keybindings();
 }
 
 function update_ui() {
@@ -299,6 +324,11 @@ function clear_current() {
     image_sel(selected_img);
 }
 
+function clear_last() {
+    v = input.val()
+    input.val(v.substring(0, v.lastIndexOf(" ")));
+}
+
 function mark_skipped(id) {
     $(`#${id}_img`)[0].className = 'preview skipped';
     $(`#${id}_div`)[0].className = 'preview skipped';
@@ -310,6 +340,10 @@ function next_image() {
 
 function prev_image() {
     image_sel(images[selected_img].prev);
+}
+
+function set_dispsize(s) {
+    large_elm.css('width', s);
 }
 
 init_ui()
