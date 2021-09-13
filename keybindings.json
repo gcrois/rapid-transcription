@@ -4,7 +4,5 @@
     "ArrowRight": "#NEXT",
     "Enter": "#APPLY",
     "Delete": "#REMOVE",
-    "Backspace": "#CLEARLAST",
-    "h": "high",
-    "l": "low"
+    "Backspace": "#CLEARLAST"
 }

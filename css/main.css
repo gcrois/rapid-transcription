@@ -26,6 +26,7 @@ body {
     text-align: center;
     padding: 2px;
     font-size: 32px;
+    overflow-x: auto;
 }
 
 #input {
